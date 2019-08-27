@@ -8,7 +8,7 @@ class Configuration(object):
     NOTIFICATION_EMAIL = ''
     NOTIFICATION_SMS_PHONE_NUMBER = ''
 
-    SMSAPI_ACCESS_TOKEN = ''
+    SMSAPI_ACCESS_TOKEN = 'some-token'
 
     MAIL_DEFAULT_SENDER = ''
     MAIL_SERVER = ''

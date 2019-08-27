@@ -5,7 +5,7 @@ venv:
 	virtualenv --python=python3 venv
 
 
-run:
+run: venv
 	. venv/bin/activate; python3 run.py
 
 
