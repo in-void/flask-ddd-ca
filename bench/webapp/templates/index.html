@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+              integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
+
+        <title>Recruitment Task</title>
+    </head>
+
+    <body>
+        <div id="benchmarkApp" class="container">
+            <div class="jumbotron">
+                <h1 class="display-4">Web pages benchmark tool</h1>
+                <p class="lead">This is a simple web benchmark that measure web page load time and compare it with competitive web pages.</p>
+                <hr class="my-4">
+
+                <div id="benchmarkForm">
+                    <div class="form-group">
+                        <label for="subjectWebPage">Subject</label>
+
+                        <input type="text" class="form-control" id="subjectWebPage" v-model="subject_url"
+                               placeholder="Enter web page url">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="webPagesToCompare">Competitors</label>
+
+                        <input type="text" class="form-control" id="webPagesToCompare" v-model="competitors_urls"
+                               placeholder="Enter web pages separated by comma">
+                    </div>
+
+                    <button @click="doBenchmark" class="btn btn-primary">Do benchmark!</button>
+                    <button @click="fillByRandomUrls" class="btn btn-primary">Fill by urls that works ;)</button>
+                </div>
+            </div>
+
+            <div v-if="ajaxRequest">
+                please wait....
+            </div>
+
+            <div id="benchmarkResults" v-if="benchmarkResultShow">
+                <table class="table table-bordered table-striped">
+                    <caption>Benchmark (id: ${benchmarkResult.id}  date: ${benchmarkResult.date})</caption>
+
+                    <thead>
+                        <tr>
+                            <th>url</th>
+                            <th>load time</th>
+                            <th>difference</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>${benchmarkResult.subject_url}</td>
+                            <td>${benchmarkResult.subject_load_time}</td>
+                            <td></td>
+                        </tr>
+
+                        <tr v-for="c in benchmarkResult.competitors">
+                            <td>${c.url}</td>
+                            <td>${c.load_time}</td>
+                            <td>${benchmarkResult.subject_load_time - c.load_time}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            var app = new Vue({
+              delimiters: ['${', '}'],
+              el: '#benchmarkApp',
+              data: {
+                subject_url: '',
+                competitors_urls: '',
+                benchmarkResult: [],
+                benchmarkResultShow: false,
+                ajaxRequest: false
+              },
+                  methods: {
+                    doBenchmark: function() {
+                        this.ajaxRequest = true;
+
+                        this.$http.post('api/benchmark', {
+                          subject_url: this.subject_url,
+                          competitors_urls: this.competitors_urls
+                        }).then(function (response) {
+                            this.benchmarkResult = response.data;
+                            this.benchmarkResultShow = true
+                            this.ajaxRequest = false
+                        }, function() {
+                            this.ajaxRequest = false
+                            alert(':(');
+                        });
+                    },
+                    fillByRandomUrls: function() {
+                        urls = [
+                            'http://www.wp.pl', 'http://www.onet.pl', 'http://www.interia.pl', 'http://www.google.pl',
+                            'http://www.facebook.com', 'http://www.o2.com', 'https://www.allegro.pl',
+                            'http://www.google.pl', 'https://github.com', 'https://www.smsapi.pl/'
+                        ];
+
+                        this.subject_url = urls[Math.floor(Math.random() * urls.length)]
+
+                        var copy = urls.slice(0), rand = [];
+
+                        for (var i = 0; i < 3 && i < copy.length; i++) {
+                            var index = Math.floor(Math.random() * copy.length);
+                            rand.push(copy.splice(index, 1)[0]);
+                        }
+
+                        this.competitors_urls = rand.join(',')
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

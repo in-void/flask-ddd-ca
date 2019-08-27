@@ -1,0 +1,6 @@
+Flask==0.12.2
+Flask-RESTful==0.3.6
+pytest==3.5.0
+smsapi-client==2.1.0
+pytest-flask==0.10.0
+flask-mail==0.9.1
